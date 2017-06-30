@@ -13,8 +13,8 @@ Android upload abstract module
 * 提供图片上传任务实现类BitmapUploadAsyncTask
 * 提供阿里云OSS（AliyunUploadManager）文件上传实现
 
-##用法介绍
-###简单用法
+## 用法介绍
+### 简单用法
 
 ```
 UploadManager uploadManager = new AliyunUploadManager(this, new OSSPlainTextAKSKCredentialProvider("<ACCESS-KEY>","<SCRECT-KEY>", "<bucket-name>);
@@ -23,7 +23,7 @@ uploadAsyncTask.setUploadCallback(this);
 uploadAsyncTask.execute("image-url");
 
 ```
-###记得在Activity onDestroy 调用uploadAsyncTask的onDestroy方法，防止内存泄漏
+### 记得在Activity onDestroy 调用uploadAsyncTask的onDestroy方法，防止内存泄漏
 ```
 protected void onDestroy() {
       if(uploadAsyncTask != null){
