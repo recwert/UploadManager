@@ -1,5 +1,6 @@
 package com.duoniu.uploadmanager.task;
 
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
@@ -7,6 +8,7 @@ import com.duoniu.uploadmanager.policy.DefaultFilenamePolicy;
 import com.duoniu.uploadmanager.policy.FilenamePolicy;
 import com.duoniu.uploadmanager.manager.UploadManager;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -14,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Huolongguo on 16/3/31.
  */
-public class UploadAsyncTask extends AsyncTask<String, Integer, List<String>> {
+public class UploadAsyncTask<Params> extends AsyncTask<Params, Integer, List<String>> {
 
     protected UploadManager uploadManager;
 
@@ -39,19 +41,31 @@ public class UploadAsyncTask extends AsyncTask<String, Integer, List<String>> {
     }
 
     @Override
-    protected List<String> doInBackground(String... params) {
+    protected List<String> doInBackground(Params... params) {
         copyOnWriteResults = new CopyOnWriteArrayList<>();
         uploadTasks = new CopyOnWriteArrayList<>();
         for (int i = 0; i < params.length; i++) {
             copyOnWriteResults.add(new String(""));
         }
-        for (int i = 0; i < params.length; i++) {
-            String imagePath = params[i];
-            if (imagePath.startsWith("file://")) {
-                imagePath = imagePath.substring("file://".length());
+        if (params[0] instanceof String) {
+            for (int i = 0; i < params.length; i++) {
+                String imagePath = (String) params[i];
+                if (imagePath.startsWith("file://")) {
+                    imagePath = imagePath.substring("file://".length());
+                }
+                uploadTasks.add(uploadFile(imagePath, new UploadTaskListener(i)));
             }
-            uploadTasks.add(uploadFile(imagePath, new UploadTaskListener(i)));
         }
+        else if (params[0] instanceof Bitmap) {
+            for (int i = 0; i < params.length; i++) {
+                Bitmap bitmap = (Bitmap) params[i];
+                ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                byte[] bitmapBytes =byteArrayOutputStream.toByteArray();
+                uploadTasks.add(uploadFile(bitmapBytes, new UploadTaskListener(i)));
+            }
+        }
+
         while (!isUploadFinished() && !isCancelled()) {
 
         }
@@ -66,10 +80,15 @@ public class UploadAsyncTask extends AsyncTask<String, Integer, List<String>> {
         }
     }
 
-    protected UploadManager.UploadTask uploadFile(String imagePath, UploadManager.UploadListener uploadListener){
+    protected UploadManager.UploadTask uploadFile(String imagePath, UploadManager.UploadListener uploadListener) {
         return uploadManager.uploadFile(imagePath, filenamePolicy.generatorFilename(imagePath),
                 uploadListener);
     }
+
+    protected UploadManager.UploadTask uploadFile(byte[] bytes, UploadManager.UploadListener uploadListener) {
+        return uploadManager.uploadFile(bytes, filenamePolicy.generatorFilename(""), uploadListener);
+    }
+
     private boolean isUploadFinished(){
         Iterator<String> iterator = copyOnWriteResults.iterator();
         while (iterator.hasNext()){
