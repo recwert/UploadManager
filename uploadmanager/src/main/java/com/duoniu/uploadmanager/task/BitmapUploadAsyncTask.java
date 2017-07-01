@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 /**
  * Created by Huolongguo on 16/3/31.
  */
-public class BitmapUploadAsyncTask extends UploadAsyncTask {
+public class BitmapUploadAsyncTask<Params> extends UploadAsyncTask<Params> {
 
     BitmapCompressPolicy bitmapCompressPolicy;
 
@@ -38,6 +38,14 @@ public class BitmapUploadAsyncTask extends UploadAsyncTask {
         return uploadManager.uploadFile(byteArrayOutputStream.toByteArray(), filenamePolicy.generatorFilename(imagePath),
                 uploadListener);
 
+    }
+
+    protected UploadManager.UploadTask uploadFile(byte[] bytes, UploadManager.UploadListener uploadListener) {
+        if (bitmapCompressPolicy == null) {
+            return super.uploadFile(bytes, uploadListener);
+        }
+        byte[] targetBytes = bitmapCompressPolicy.compress(bytes);
+        return super.uploadFile(targetBytes, uploadListener);
     }
 
     @Override

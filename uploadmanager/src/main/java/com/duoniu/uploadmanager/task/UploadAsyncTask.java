@@ -61,7 +61,7 @@ public class UploadAsyncTask<Params> extends AsyncTask<Params, Integer, List<Str
                 Bitmap bitmap = (Bitmap) params[i];
                 ByteArrayOutputStream byteArrayOutputStream =new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                byte[] bitmapBytes =byteArrayOutputStream.toByteArray();
+                byte[] bitmapBytes = byteArrayOutputStream.toByteArray();
                 uploadTasks.add(uploadFile(bitmapBytes, new UploadTaskListener(i)));
             }
         }

@@ -8,5 +8,7 @@ import android.graphics.Bitmap;
 public interface BitmapCompressPolicy {
     Bitmap compress(Bitmap src);
 
+    byte[] compress(byte[] bytes);
+
     Bitmap compress(String bitmapPath);
 }

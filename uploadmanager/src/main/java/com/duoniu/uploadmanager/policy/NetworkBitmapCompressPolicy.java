@@ -37,6 +37,11 @@ public class NetworkBitmapCompressPolicy implements BitmapCompressPolicy {
         return BitmapFactory.decodeStream(byteArrayInputStream, null, null);
     }
 
+    @Override
+    public byte[] compress(byte[] bytes) {
+        return compressToByteArray(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+    }
+
     public byte[] compressToByteArray(Bitmap src){
         int compressThreshold = getCompressThreshold();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

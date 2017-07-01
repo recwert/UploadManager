@@ -14,6 +14,11 @@ public class DefaultBitmapCompressPolicy implements BitmapCompressPolicy {
     }
 
     @Override
+    public byte[] compress(byte[] bytes) {
+        return bytes;
+    }
+
+    @Override
     public Bitmap compress(String bitmapPath) {
         return BitmapFactory.decodeFile(bitmapPath);
     }
